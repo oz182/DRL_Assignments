@@ -43,7 +43,11 @@ class ProgressiveNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(128, output_dim)
         )
-        policy.load_state_dict(torch.load(weight_path))
+        # Load the state_dict and remap keys to match Sequential layers
+        pretrained_state = torch.load(weight_path)
+        remapped_state = {f"{i}.weight": pretrained_state[f"fc{i+1}.weight"] for i in range(3)}
+        remapped_state.update({f"{i}.bias": pretrained_state[f"fc{i+1}.bias"] for i in range(3)})
+        policy.load_state_dict(remapped_state)
         return policy
 
     def _create_actor_critic_column(self, input_dim, output_dim):

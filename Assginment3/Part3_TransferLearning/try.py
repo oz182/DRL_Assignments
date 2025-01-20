@@ -22,3 +22,5 @@ class ProgressiveNetwork(nn.Module):
             self.lateral_connections.append(nn.Linear(128, 128))
 
         self.actor_critic_column = self._create_actor_critic_column(input_dim, output_dim)
+
+    def 
