@@ -10,12 +10,16 @@ import optuna
 import matplotlib.pyplot as plt
 from plotly.io import show
 import sklearn
+import time
+# Best hyperparameters: {'policy_lr': 0.005582963305227242, 'value_lr': 0.0006112590022937452, 'discount_factor': 0.9792188226037197}
+# Best reward: -109.30097087378641
 
-#Best is trial 86 with value: -108.3883495145631.
-#Best hyperparameters: {'policy_lr': 0.000773030869420671, 'value_lr': 0.0007890187704703474, 'discount_factor': 0.9952315256686592}
-# Best reward: -108.3883495145631
+# Last try that we have a plot of:
+# Best is trial 24 with value: -111.11650485436893.
+# Best hyperparameters: {'policy_lr': 0.0011435182467994243, 'value_lr': 0.0005850808192221598, 'discount_factor': 0.9876381948631086}
+# Best reward: -111.11650485436893
 
-fine_tunining=True  # Flag to activate hyperparameter fine-tuning using Optuna
+fine_tunining=False  # Flag to activate hyperparameter fine-tuning using Optuna
  
 # Policy Network (Actor)
 class PolicyNetwork(nn.Module):
@@ -95,6 +99,7 @@ def train(env, policy, value_network, discount_factor, max_episodes, max_steps):
                     if fine_tunining:
                         torch.save(policy.state_dict(), "Assginment3/Part1_IndividualNet/Acrobot_AC/acrobot_policy.pth")
                         torch.save(value_network.state_dict(), "Assginment3/Part1_IndividualNet/Acrobot_AC/acrobot_value.pth")
+                        print("Model saved!")
                     return episode_rewards
                 break
     return episode_rewards
@@ -187,7 +192,10 @@ def main():
         env = gym.make('Acrobot-v1')
         policy = PolicyNetwork(state_size=6, action_size=3, learning_rate=0.001)
         value_network = ValueNetwork(state_size=6, learning_rate=0.001)
+        start_time=time.time()
         rewards = train(env, policy, value_network, discount_factor=0.99, max_episodes=1500, max_steps=501)
+        end_time=time.time()
+        print("Training time:", end_time-start_time)
         plot_single_reward(rewards, policy_lr=0.001, value_lr=0.001, discount_factor=0.99)
 
 if __name__ == '__main__':

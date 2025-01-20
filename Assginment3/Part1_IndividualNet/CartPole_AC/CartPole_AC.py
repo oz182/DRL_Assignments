@@ -9,12 +9,13 @@ import matplotlib.pyplot as plt
 import optuna
 from plotly.io import show
 import sklearn
+import time
 
 fine_tunining=True  # Flag to activate hyperparameter fine-tuning using Optuna
 
-#Best is trial 103 with value: 298.449.
-#Best hyperparameters: {'policy_lr': 0.0005300702672331444, 'value_lr': 0.0007898088475083023, 'discount_factor': 0.9932619487803604}
-#Best reward: 298.449
+#Best is trial 29 with value: 209.044.
+#Best hyperparameters: {'policy_lr': 0.000490641507278229, 'value_lr': 0.0016361417772812591, 'discount_factor': 0.9916757486832062}
+#Best reward: 209.044
 
 # Policy Network (Actor)
 class PolicyNetwork(nn.Module):
@@ -136,7 +137,7 @@ def objective(trial):
     policy = PolicyNetwork(state_size=6, action_size=3, learning_rate=policy_lr)
     value_network = ValueNetwork(state_size=6, learning_rate=value_lr)
 
-    average_reward = np.mean(train(env, policy, value_network, discount_factor, max_episodes=1000, max_steps=501))
+    average_reward = np.mean(train(env, policy, value_network, discount_factor, max_episodes=500, max_steps=501))
     return average_reward
 
 
@@ -165,7 +166,10 @@ def main():
         env = gym.make('CartPole-v1')
         policy = PolicyNetwork(state_size=6, action_size=3, learning_rate=0.0001)
         value_network = ValueNetwork(state_size=6, learning_rate=0.0005)
+        start_time = time.time()
         rewards = train(env, policy, value_network, discount_factor=0.99, max_episodes=1500, max_steps=501)
+        end_time = time.time()
+        print(f'Time elapsed: {end_time - start_time}')
         plot_single_reward(rewards, policy_lr=0.0001, value_lr=0.0005, discount_factor=0.99)
 
 
